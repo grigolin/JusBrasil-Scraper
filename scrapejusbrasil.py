@@ -1,17 +1,15 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
 import undetected_chromedriver as uc
-import requests
-import csv
 import time
 import openpyxl
 
+# change the url and the title of the excel file
+url = 'https://www.jusbrasil.com.br/processos/nome/226787685/under-armour-br-hobby-ua-brasil-comercio-e-distribuicao-de-artigos-esportivos-ltda'
+title = 'Jusbrasil - Under Armour'
+
 excel = openpyxl.Workbook()
 sheet = excel.active
-sheet.title = 'Jusbrasil - Under Armour'
+sheet.title = title
 sheet['A1'] = 'Numero do processo'
 sheet['A1'].font = openpyxl.styles.Font(bold=True)
 sheet['B1'] = 'Nome do processo'
@@ -24,10 +22,8 @@ sheet['E1'] = 'Procedimento'
 sheet['E1'].font = openpyxl.styles.Font(bold=True)
 
 driver = uc.Chrome()
-driver.implicitly_wait(5)
-url = 'https://www.jusbrasil.com.br/processos/nome/226787685/under-armour-br-hobby-ua-brasil-comercio-e-distribuicao-de-artigos-esportivos-ltda'
 driver.get(url)
-driver.implicitly_wait(5)
+driver.implicitly_wait(3)
 
 # SCROLL SCRIPT
 SCROLL_PAUSE_TIME = 0.5
@@ -47,11 +43,13 @@ while True:
     if new_height == last_height:
         break
     last_height = new_height
+
 # SCROLL SCRIPT END
 
 soup = BeautifulSoup(driver.page_source, 'html.parser')
 table = soup.find('ul', class_="InfiniteList LawsuitList-list")
 
+# número do processo, partes envolvidas, tribunal, localidade e procedimento
 for i in table:
     numeroprocesso = i.find(
         'span', class_="LawsuitCardPersonPage-header-processNumber")
@@ -88,39 +86,6 @@ for i in table:
     sheet.append([numeroprocesso, nomeprocesso,
                  tribunal, localidade, procedimento])
 
-excel.save('Jusbrasil - Under Armour.xlsx')
-
-# https://openpyxl.readthedocs.io/en/stable/defined_names.html
-# 1. Nike do Brasil Comércio e Participações Ltda.
-# 2. Adidas do Brasil Ltda.
-# 3. Puma do Brasil Ltda.
-# 4. Reebok Produtos Esportivos Ltda.
-# 5. Asics Brasil, Distribuição e Comércio de Artigos Esportivos Ltda.
-# 6. Under Armour Brasil Comércio e Distribuição de Artigos Esportivos Ltda
-# https://stackoverflow.com/questions/51122855/openpyxl-xlsx-results-are-appending-instead-of-overwriting
-# número do processo, partes envolvidas, tribunal, localidade, UF, classe ou procedimento
-# With Selenium:
-# numeroprocesso = driver.find_elements(
-#     By.CLASS_NAME, 'LawsuitCardPersonPage-header-processNumber')
-# for i in numeroprocesso:
-#     print(i.text)
-
-# nomeprocesso = driver.find_elements(
-#     By.CLASS_NAME, 'LawsuitCardPersonPage-header-processInvolved')
-# for i in nomeprocesso:
-#     print(i.text)
-
-# tribunal = driver.find_elements(
-#     By.XPATH, "//p[@role='body-court']")
-# for i in tribunal:
-#     print(i.text)
-
-# localidade = driver.find_elements(
-#     By.XPATH, "//span[@class='LawsuitCardPersonPage-body-row-item-textSpan']")
-# for i in localidade:
-#     print(i.text)
-
-# procedimento = driver.find_elements(
-#     By.XPATH, "//p[@role='body-kind']")
-# for i in procedimento:
-#     print(i.text)
+excel.save(f"{title}.xlsx")
+print("Finished")
+driver.quit()

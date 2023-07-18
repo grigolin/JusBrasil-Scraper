@@ -1,15 +1,14 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from bs4 import BeautifulSoup
 import undetected_chromedriver as uc
-import requests
 import time
 import openpyxl
 from openpyxl import load_workbook
 
-excel = load_workbook('C:\\Users\\Terminal_6\\Downloads\\Scraping\\Jusbrasil - Under Armour teste.xlsx')
+# change to your path (it has to be the same file) and url
+path = "C:\\Users\\Terminal_6\\Downloads\\jusbrscraper\\JusBrasil-Scraper\\Jusbrasil - Under Armour.xlsx"
+url = 'https://www.jusbrasil.com.br/processos/nome/226787685/under-armour-br-hobby-ua-brasil-comercio-e-distribuicao-de-artigos-esportivos-ltda'
+
+excel = load_workbook(path)
 sheet = excel.active
 sheet['A1'] = 'Numero do processo'
 sheet['A1'].font = openpyxl.styles.Font(bold=True)
@@ -23,10 +22,8 @@ sheet['E1'] = 'Procedimento'
 sheet['E1'].font = openpyxl.styles.Font(bold=True)
 
 driver = uc.Chrome()
-driver.implicitly_wait(5)
-url = 'https://www.jusbrasil.com.br/processos/nome/226787685/under-armour-br-hobby-ua-brasil-comercio-e-distribuicao-de-artigos-esportivos-ltda'
 driver.get(url)
-driver.implicitly_wait(5)
+driver.implicitly_wait(3)
 
 # SCROLL SCRIPT
 SCROLL_PAUSE_TIME = 0.5
@@ -87,41 +84,6 @@ for i in table:
     sheet.append([numeroprocesso, nomeprocesso,
                  tribunal, localidade, procedimento])
 
-excel.save('C:\\Users\\Terminal_6\\Downloads\\Scraping\\Jusbrasil - Under Armour teste.xlsx')
+excel.save(path)
 print("Finished")
 driver.quit()
-
-# https://openpyxl.readthedocs.io/en/stable/defined_names.html
-# 1. Nike do Brasil Comércio e Participações Ltda.
-# 2. Adidas do Brasil Ltda.
-# 3. Puma do Brasil Ltda.
-# 4. Reebok Produtos Esportivos Ltda.
-# 5. Asics Brasil, Distribuição e Comércio de Artigos Esportivos Ltda.
-# 6. Under Armour Brasil Comércio e Distribuição de Artigos Esportivos Ltda
-# https://stackoverflow.com/questions/51122855/openpyxl-xlsx-results-are-appending-instead-of-overwriting
-# número do processo, partes envolvidas, tribunal, localidade, UF, classe ou procedimento
-# With Selenium:
-# numeroprocesso = driver.find_elements(
-#     By.CLASS_NAME, 'LawsuitCardPersonPage-header-processNumber')
-# for i in numeroprocesso:
-#     print(i.text)
-
-# nomeprocesso = driver.find_elements(
-#     By.CLASS_NAME, 'LawsuitCardPersonPage-header-processInvolved')
-# for i in nomeprocesso:
-#     print(i.text)
-
-# tribunal = driver.find_elements(
-#     By.XPATH, "//p[@role='body-court']")
-# for i in tribunal:
-#     print(i.text)
-
-# localidade = driver.find_elements(
-#     By.XPATH, "//span[@class='LawsuitCardPersonPage-body-row-item-textSpan']")
-# for i in localidade:
-#     print(i.text)
-
-# procedimento = driver.find_elements(
-#     By.XPATH, "//p[@role='body-kind']")
-# for i in procedimento:
-#     print(i.text)

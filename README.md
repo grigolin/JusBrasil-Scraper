@@ -7,6 +7,8 @@ This project is for educational purposes only. The data scraped from this projec
 
 ### Install
 
+> This project uses [Undetected-ChromeDriver](https://github.com/ultrafunkamsterdam/undetected-chromedriver), [Beautiful Soup](https://pypi.org/project/beautifulsoup4/) and [OpenPyXL](https://openpyxl.readthedocs.io/en/stable/index.html).
+
 Install all requirements with
 
 ```bash
